@@ -2,8 +2,12 @@ package no.oboy.model;
 
 import com.opencsv.bean.CsvBindByName;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class BaggageRecordOutput {
+
+    @CsvBindByName(column = "id")
+    String id;
     @CsvBindByName(column = "sourceTimestamp")
     LocalDateTime sourceTimestamp;
     @CsvBindByName(column = "bagTagNumber")
@@ -171,6 +175,12 @@ public class BaggageRecordOutput {
 
     public static BaggageRecordOutput from(BaggageRecord aRecord) {
         BaggageRecordOutput baggageRecordOutput = new BaggageRecordOutput();
+
+        baggageRecordOutput.setId(String.valueOf(aRecord.getBagTagNumber().hashCode()
+                + aRecord.getSourceTimestamp().getYear()
+                + aRecord.getSourceTimestamp().getMonthValue())
+                + aRecord.getSourceTimestamp().getDayOfMonth()
+        );
         baggageRecordOutput.setSourceTimestamp(aRecord.sourceTimestamp);
         baggageRecordOutput.setBagTagNumber(aRecord.bagTagNumber);
         baggageRecordOutput.setBagEventCode(aRecord.bagEventCode);
@@ -220,6 +230,14 @@ public class BaggageRecordOutput {
         baggageRecordOutput.setLeg7OperatingAirlineIATA(aRecord.leg7OperatingAirlineIATA);
         baggageRecordOutput.setLeg7Sobt(aRecord.leg7Sobt);
         return baggageRecordOutput;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Double getLat0Departure() {
@@ -862,3 +880,4 @@ public class BaggageRecordOutput {
         this.lng7Arrival = lng7Arrival;
     }
 }
+
