@@ -7,9 +7,9 @@ public class AirportIATACode {
     @CsvBindByPosition(position = 0)
     private String iataCode;
     @CsvBindByPosition(position = 1)
-    private double lat;
-    @CsvBindByPosition(position = 2)
     private double lng;
+    @CsvBindByPosition(position = 2)
+    private double lat;
     @CsvBindByPosition(position = 3)
     private String type;
 
