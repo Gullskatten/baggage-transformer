@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -58,12 +57,6 @@ public class CsvUtil<T> {
     }
 
     public List<AirportIATACode> readAirportCodesAsRaw(String resourceFileName) {
-        LOGGER.info("Reading file (raw) from src/main/resources/{}", resourceFileName);
-        if(!resourceFileName.startsWith("/")) {
-            LOGGER.debug("Appending / to resource filename");
-            resourceFileName = "/" + resourceFileName;
-        }
-
         try(BufferedReader reader = Files.newBufferedReader(Path.of(this.getClass().getResource(resourceFileName).getPath()), Charsets.UTF_16)) {
             reader.lines().forEach(line -> {
                 LOGGER.debug(line);

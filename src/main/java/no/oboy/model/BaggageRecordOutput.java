@@ -28,8 +28,6 @@ public class BaggageRecordOutput {
     String leg0DepartureAirportIATA;
     @CsvBindByName(column = "leg0ArrivalAirportIATA")
     String leg0ArrivalAirportIATA;
-    @CsvBindByName(column = "leg0OperatingAirlineIATA")
-    String leg0OperatingAirlineIATA;
     @CsvBindByName(column = "leg0FlightId")
     String leg0FlightId;
     @CsvBindByName(column = "leg0Sobt")
@@ -38,8 +36,6 @@ public class BaggageRecordOutput {
     String leg1DepartureAirportIATA;
     @CsvBindByName(column = "leg1ArrivalAirportIATA")
     String leg1ArrivalAirportIATA;
-    @CsvBindByName(column = "leg1OperatingAirlineIATA")
-    String leg1OperatingAirlineIATA;
     @CsvBindByName(column = "leg1FlightId")
     String leg1FlightId;
     @CsvBindByName(column = "leg1Sobt")
@@ -48,8 +44,6 @@ public class BaggageRecordOutput {
     String leg2DepartureAirportIATA;
     @CsvBindByName(column = "leg2ArrivalAirportIATA")
     String leg2ArrivalAirportIATA;
-    @CsvBindByName(column = "leg2OperatingAirlineIATA")
-    String leg2OperatingAirlineIATA;
     @CsvBindByName(column = "leg2FlightId")
     String leg2FlightId;
     @CsvBindByName(column = "leg2Sobt")
@@ -58,8 +52,6 @@ public class BaggageRecordOutput {
     String leg3DepartureAirportIATA;
     @CsvBindByName(column = "leg3ArrivalAirportIATA")
     String leg3ArrivalAirportIATA;
-    @CsvBindByName(column = "leg3OperatingAirlineIATA")
-    String leg3OperatingAirlineIATA;
     @CsvBindByName(column = "leg3FlightId")
     String leg3FlightId;
     @CsvBindByName(column = "leg3Sobt")
@@ -68,8 +60,6 @@ public class BaggageRecordOutput {
     String leg4DepartureAirportIATA;
     @CsvBindByName(column = "leg4ArrivalAirportIATA")
     String leg4ArrivalAirportIATA;
-    @CsvBindByName(column = "leg4OperatingAirlineIATA")
-    String leg4OperatingAirlineIATA;
     @CsvBindByName(column = "leg4FlightId")
     String leg4FlightId;
     @CsvBindByName(column = "leg4Sobt")
@@ -78,8 +68,6 @@ public class BaggageRecordOutput {
     String leg5DepartureAirportIATA;
     @CsvBindByName(column = "leg5ArrivalAirportIATA")
     String leg5ArrivalAirportIATA;
-    @CsvBindByName(column = "leg5OperatingAirlineIATA")
-    String leg5OperatingAirlineIATA;
     @CsvBindByName(column = "leg5FlightId")
     String leg5FlightId;
     @CsvBindByName(column = "leg5Sobt")
@@ -88,8 +76,6 @@ public class BaggageRecordOutput {
     String leg6DepartureAirportIATA;
     @CsvBindByName(column = "leg6ArrivalAirportIATA")
     String leg6ArrivalAirportIATA;
-    @CsvBindByName(column = "leg6OperatingAirlineIATA")
-    String leg6OperatingAirlineIATA;
     @CsvBindByName(column = "leg6FlightId")
     String leg6FlightId;
     @CsvBindByName(column = "leg6Sobt")
@@ -98,8 +84,6 @@ public class BaggageRecordOutput {
     String leg7DepartureAirportIATA;
     @CsvBindByName(column = "leg7ArrivalAirportIATA")
     String leg7ArrivalAirportIATA;
-    @CsvBindByName(column = "leg7OperatingAirlineIATA")
-    String leg7OperatingAirlineIATA;
     @CsvBindByName(column = "leg7FlightId")
     String leg7FlightId;
     @CsvBindByName(column = "leg7Sobt")
@@ -192,42 +176,34 @@ public class BaggageRecordOutput {
         baggageRecordOutput.setLeg0ArrivalAirportIATA(aRecord.leg0ArrivalAirportIATA);
         baggageRecordOutput.setLeg0DepartureAirportIATA(aRecord.leg0DepartureAirportIATA);
         baggageRecordOutput.setLeg0FlightId(aRecord.leg0FlightId);
-        baggageRecordOutput.setLeg0OperatingAirlineIATA(aRecord.leg0OperatingAirlineIATA);
         baggageRecordOutput.setLeg0Sobt(aRecord.leg0Sobt);
         baggageRecordOutput.setLeg1ArrivalAirportIATA(aRecord.leg1ArrivalAirportIATA);
         baggageRecordOutput.setLeg1DepartureAirportIATA(aRecord.leg1DepartureAirportIATA);
         baggageRecordOutput.setLeg1FlightId(aRecord.leg1FlightId);
-        baggageRecordOutput.setLeg1OperatingAirlineIATA(aRecord.leg1OperatingAirlineIATA);
         baggageRecordOutput.setLeg1Sobt(aRecord.leg1Sobt);
         baggageRecordOutput.setLeg2ArrivalAirportIATA(aRecord.leg2ArrivalAirportIATA);
         baggageRecordOutput.setLeg2DepartureAirportIATA(aRecord.leg2DepartureAirportIATA);
         baggageRecordOutput.setLeg2FlightId(aRecord.leg2FlightId);
-        baggageRecordOutput.setLeg2OperatingAirlineIATA(aRecord.leg2OperatingAirlineIATA);
         baggageRecordOutput.setLeg2Sobt(aRecord.leg2Sobt);
         baggageRecordOutput.setLeg3ArrivalAirportIATA(aRecord.leg3ArrivalAirportIATA);
         baggageRecordOutput.setLeg3DepartureAirportIATA(aRecord.leg3DepartureAirportIATA);
         baggageRecordOutput.setLeg3FlightId(aRecord.leg3FlightId);
-        baggageRecordOutput.setLeg3OperatingAirlineIATA(aRecord.leg3OperatingAirlineIATA);
         baggageRecordOutput.setLeg3Sobt(aRecord.leg3Sobt);
         baggageRecordOutput.setLeg4ArrivalAirportIATA(aRecord.leg4ArrivalAirportIATA);
         baggageRecordOutput.setLeg4DepartureAirportIATA(aRecord.leg4DepartureAirportIATA);
         baggageRecordOutput.setLeg4FlightId(aRecord.leg4FlightId);
-        baggageRecordOutput.setLeg4OperatingAirlineIATA(aRecord.leg4OperatingAirlineIATA);
         baggageRecordOutput.setLeg4Sobt(aRecord.leg4Sobt);
         baggageRecordOutput.setLeg5ArrivalAirportIATA(aRecord.leg5ArrivalAirportIATA);
         baggageRecordOutput.setLeg5DepartureAirportIATA(aRecord.leg5DepartureAirportIATA);
         baggageRecordOutput.setLeg5FlightId(aRecord.leg5FlightId);
-        baggageRecordOutput.setLeg5OperatingAirlineIATA(aRecord.leg5OperatingAirlineIATA);
         baggageRecordOutput.setLeg5Sobt(aRecord.leg5Sobt);
         baggageRecordOutput.setLeg6ArrivalAirportIATA(aRecord.leg6ArrivalAirportIATA);
         baggageRecordOutput.setLeg6DepartureAirportIATA(aRecord.leg6DepartureAirportIATA);
         baggageRecordOutput.setLeg6FlightId(aRecord.leg6FlightId);
-        baggageRecordOutput.setLeg6OperatingAirlineIATA(aRecord.leg6OperatingAirlineIATA);
         baggageRecordOutput.setLeg6Sobt(aRecord.leg6Sobt);
         baggageRecordOutput.setLeg7ArrivalAirportIATA(aRecord.leg7ArrivalAirportIATA);
         baggageRecordOutput.setLeg7DepartureAirportIATA(aRecord.leg7DepartureAirportIATA);
         baggageRecordOutput.setLeg7FlightId(aRecord.leg7FlightId);
-        baggageRecordOutput.setLeg7OperatingAirlineIATA(aRecord.leg7OperatingAirlineIATA);
         baggageRecordOutput.setLeg7Sobt(aRecord.leg7Sobt);
         return baggageRecordOutput;
     }
@@ -324,14 +300,6 @@ public class BaggageRecordOutput {
         this.leg0ArrivalAirportIATA = leg0ArrivalAirportIATA;
     }
 
-    public String getLeg0OperatingAirlineIATA() {
-        return leg0OperatingAirlineIATA;
-    }
-
-    public void setLeg0OperatingAirlineIATA(String leg0OperatingAirlineIATA) {
-        this.leg0OperatingAirlineIATA = leg0OperatingAirlineIATA;
-    }
-
     public String getLeg0FlightId() {
         return leg0FlightId;
     }
@@ -362,14 +330,6 @@ public class BaggageRecordOutput {
 
     public void setLeg1ArrivalAirportIATA(String leg1ArrivalAirportIATA) {
         this.leg1ArrivalAirportIATA = leg1ArrivalAirportIATA;
-    }
-
-    public String getLeg1OperatingAirlineIATA() {
-        return leg1OperatingAirlineIATA;
-    }
-
-    public void setLeg1OperatingAirlineIATA(String leg1OperatingAirlineIATA) {
-        this.leg1OperatingAirlineIATA = leg1OperatingAirlineIATA;
     }
 
     public String getLeg1FlightId() {
@@ -404,14 +364,6 @@ public class BaggageRecordOutput {
         this.leg2ArrivalAirportIATA = leg2ArrivalAirportIATA;
     }
 
-    public String getLeg2OperatingAirlineIATA() {
-        return leg2OperatingAirlineIATA;
-    }
-
-    public void setLeg2OperatingAirlineIATA(String leg2OperatingAirlineIATA) {
-        this.leg2OperatingAirlineIATA = leg2OperatingAirlineIATA;
-    }
-
     public String getLeg2FlightId() {
         return leg2FlightId;
     }
@@ -442,14 +394,6 @@ public class BaggageRecordOutput {
 
     public void setLeg3ArrivalAirportIATA(String leg3ArrivalAirportIATA) {
         this.leg3ArrivalAirportIATA = leg3ArrivalAirportIATA;
-    }
-
-    public String getLeg3OperatingAirlineIATA() {
-        return leg3OperatingAirlineIATA;
-    }
-
-    public void setLeg3OperatingAirlineIATA(String leg3OperatingAirlineIATA) {
-        this.leg3OperatingAirlineIATA = leg3OperatingAirlineIATA;
     }
 
     public String getLeg3FlightId() {
@@ -484,14 +428,6 @@ public class BaggageRecordOutput {
         this.leg4ArrivalAirportIATA = leg4ArrivalAirportIATA;
     }
 
-    public String getLeg4OperatingAirlineIATA() {
-        return leg4OperatingAirlineIATA;
-    }
-
-    public void setLeg4OperatingAirlineIATA(String leg4OperatingAirlineIATA) {
-        this.leg4OperatingAirlineIATA = leg4OperatingAirlineIATA;
-    }
-
     public String getLeg4FlightId() {
         return leg4FlightId;
     }
@@ -522,14 +458,6 @@ public class BaggageRecordOutput {
 
     public void setLeg5ArrivalAirportIATA(String leg5ArrivalAirportIATA) {
         this.leg5ArrivalAirportIATA = leg5ArrivalAirportIATA;
-    }
-
-    public String getLeg5OperatingAirlineIATA() {
-        return leg5OperatingAirlineIATA;
-    }
-
-    public void setLeg5OperatingAirlineIATA(String leg5OperatingAirlineIATA) {
-        this.leg5OperatingAirlineIATA = leg5OperatingAirlineIATA;
     }
 
     public String getLeg5FlightId() {
@@ -564,14 +492,6 @@ public class BaggageRecordOutput {
         this.leg6ArrivalAirportIATA = leg6ArrivalAirportIATA;
     }
 
-    public String getLeg6OperatingAirlineIATA() {
-        return leg6OperatingAirlineIATA;
-    }
-
-    public void setLeg6OperatingAirlineIATA(String leg6OperatingAirlineIATA) {
-        this.leg6OperatingAirlineIATA = leg6OperatingAirlineIATA;
-    }
-
     public String getLeg6FlightId() {
         return leg6FlightId;
     }
@@ -602,14 +522,6 @@ public class BaggageRecordOutput {
 
     public void setLeg7ArrivalAirportIATA(String leg7ArrivalAirportIATA) {
         this.leg7ArrivalAirportIATA = leg7ArrivalAirportIATA;
-    }
-
-    public String getLeg7OperatingAirlineIATA() {
-        return leg7OperatingAirlineIATA;
-    }
-
-    public void setLeg7OperatingAirlineIATA(String leg7OperatingAirlineIATA) {
-        this.leg7OperatingAirlineIATA = leg7OperatingAirlineIATA;
     }
 
     public String getLeg7FlightId() {

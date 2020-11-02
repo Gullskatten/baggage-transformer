@@ -29,6 +29,7 @@ public class Main {
         FilterExecutor filterExecutor = new FilterExecutor()
                 .addFilter(LongDistanceFlights.class)
                 .addFilter(FromNorwegianAirportOnly.class)
+                .addFilter(SingleBagEventMessagesOnly.class)
                 .addFilter(NoBsmDeletedMessages.class);
 
         LOGGER.info("Initialized FilterExecutor with {} filters", filterExecutor.getFilterCount());
