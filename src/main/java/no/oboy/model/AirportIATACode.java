@@ -7,9 +7,9 @@ public class AirportIATACode {
     @CsvBindByPosition(position = 0)
     private String iataCode;
     @CsvBindByPosition(position = 1)
-    private double lng;
+    private Double lng;
     @CsvBindByPosition(position = 2)
-    private double lat;
+    private Double lat;
     @CsvBindByPosition(position = 3)
     private String type;
 
@@ -24,19 +24,19 @@ public class AirportIATACode {
         this.iataCode = iataCode;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public double getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(double lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 
