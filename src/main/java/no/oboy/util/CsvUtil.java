@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static no.oboy.constants.ProjectConstants.PATH_TO_PROJECT;
+
 public class CsvUtil<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvUtil.class);
@@ -36,12 +38,11 @@ public class CsvUtil<T> {
 
     public List<T> readCsv(String resourceFileName, Class typeOfObjects, String delimiter, Charset charset) {
         LOGGER.info("Reading file from src/main/resources/{}", resourceFileName);
-        if(!resourceFileName.startsWith("/")) {
-            LOGGER.debug("Appending / to resource filename");
-            resourceFileName = "/" + resourceFileName;
-        }
 
-        try(BufferedReader reader = Files.newBufferedReader(Path.of(this.getClass().getResource(resourceFileName).getPath()), charset)) {
+        Path absPath = Path.of(PATH_TO_PROJECT + resourceFileName);
+
+        try(BufferedReader reader =
+                    Files.newBufferedReader(absPath, charset)) {
 
             CsvToBean<T> cb = new CsvToBeanBuilder<T>(reader)
                     .withSeparator(delimiter.charAt(0))

@@ -27,7 +27,6 @@ public class Main {
         CsvUtil<BaggageRecord> baggageCsvUtil = new CsvUtil<>();
         CsvUtil<AirportIATACode> airportLocationsCsvUtil = new CsvUtil<>();
         FilterExecutor filterExecutor = new FilterExecutor()
-                .addFilter(July2020BaggageEventsOnly.class)
                 .addFilter(LongDistanceFlights.class)
                 .addFilter(FromNorwegianAirportOnly.class)
                 .addFilter(NoBsmDeletedMessages.class);
