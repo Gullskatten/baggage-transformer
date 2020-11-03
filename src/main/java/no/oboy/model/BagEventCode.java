@@ -6,7 +6,8 @@ public enum BagEventCode {
     BagInfoReceived("BagInfoReceived"),
     BagTagGenerated("BagTagGenerated"),
     BagToSecScreen("BagToSecScreen"),
-    BagToTransfer("BagToTransfer");
+    BagToTransfer("BagToTransfer"),
+    BagTagScanned("BagTagScanned");
 
     private final String value;
 

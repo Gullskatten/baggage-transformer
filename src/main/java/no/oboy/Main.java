@@ -27,11 +27,11 @@ public class Main {
         CsvUtil<BaggageRecord> baggageCsvUtil = new CsvUtil<>();
         CsvUtil<AirportIATACode> airportLocationsCsvUtil = new CsvUtil<>();
         FilterExecutor filterExecutor = new FilterExecutor()
-                .addFilter(LongDistanceFlights.class)
+                .addFilter(ToNorwegianAirportOnly.class)
                 .addFilter(FromNorwegianAirportOnly.class)
                 .addFilter(SingleBagEventMessagesOnly.class)
-                .addFilter(NoBsmDeletedMessages.class);
-
+                .addFilter(NoBsmDeletedMessages.class)
+                .addFilter(Christmas2020.class);
         LOGGER.info("Initialized FilterExecutor with {} filters", filterExecutor.getFilterCount());
 
         List<BaggageRecordOutput> filteredRecords = new ArrayList<>();
@@ -45,7 +45,7 @@ public class Main {
         }
 
         LOGGER.info("Reading baggage record files from /src/resources");
-        AllCsvFilesList.CSV_TEST_FILES.forEach(fileInResourcesFolder -> {
+        AllCsvFilesList.ALL_CSV_FILES.forEach(fileInResourcesFolder -> {
             List<BaggageRecord> allRecordsFromCsv = baggageCsvUtil.readCsv(fileInResourcesFolder, BaggageRecord.class, ",", Charsets.UTF_8);
 
             if (allRecordsFromCsv == null) {
