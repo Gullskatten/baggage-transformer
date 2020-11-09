@@ -35,10 +35,10 @@ public class CsvUtil<T> {
         }
     }
 
-    public List<T> readCsv(String resourceFileName, Class typeOfObjects, String delimiter, Charset charset) {
-        LOGGER.info("Reading file from src/main/resources/{}", resourceFileName);
+    public List<T> readCsv(String resourceFileName, Class<T> typeOfObjects, String delimiter, Charset charset) {
 
-        Path absPath = Path.of(PATH_TO_PROJECT + resourceFileName);
+        Path absPath = Path.of(System.getProperty("user.dir") + "/src/main/resources/" + resourceFileName);
+        LOGGER.info("Reading file from {}", absPath);
 
         try(BufferedReader reader =
                     Files.newBufferedReader(absPath, charset)) {
