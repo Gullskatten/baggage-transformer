@@ -5,33 +5,32 @@ import com.google.common.collect.Lists;
 import no.oboy.constants.AllCsvFilesList;
 import no.oboy.filter.*;
 import no.oboy.model.AirportIATACode;
+import no.oboy.model.BagEventCode;
 import no.oboy.model.BaggageRecord;
 import no.oboy.model.BaggageRecordOutput;
 import no.oboy.util.CsvUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     public static final String CSV_FILE_ENDING = ".csv";
-    public static final String BAGGAGE_RECORDS_POSTFIX = "baggage_records";
+    public static final String BAGGAGE_RECORDS_POSTFIX = "LOST_baggage_records";
 
     public static void main(String[] args) {
         CsvUtil<BaggageRecord> baggageCsvUtil = new CsvUtil<>();
+
         CsvUtil<AirportIATACode> airportLocationsCsvUtil = new CsvUtil<>();
         FilterExecutor filterExecutor = new FilterExecutor()
-                .addFilter(ToNorwegianAirportOnly.class)
-                .addFilter(FromNorwegianAirportOnly.class)
-                .addFilter(SingleBagEventMessagesOnly.class)
-                .addFilter(NoBsmDeletedMessages.class)
                 .addFilter(Christmas2020.class);
+
         LOGGER.info("Initialized FilterExecutor with {} filters", filterExecutor.getFilterCount());
 
         List<BaggageRecordOutput> filteredRecords = new ArrayList<>();
@@ -39,7 +38,7 @@ public class Main {
         LOGGER.info("Reading AirportIATACodes from /src/resources");
         final List<AirportIATACode> airportIATACodes = airportLocationsCsvUtil.readCsv(AllCsvFilesList.IATA_CODE_FILE, AirportIATACode.class, ";", Charsets.UTF_16);
 
-        if(airportIATACodes == null || airportIATACodes.isEmpty()) {
+        if (airportIATACodes == null || airportIATACodes.isEmpty()) {
             LOGGER.error("No airport codes were not found, make sure that the file exists!");
             return;
         }
@@ -82,169 +81,220 @@ public class Main {
             LOGGER.warn("No baggage records exists after filtering. Check the filters you have applied and try again!");
             LOGGER.warn("Output file was not created");
         } else {
+            LOGGER.info("Finding lost baggage!");
+
+            HashMap<String, List<BaggageRecordOutput>> bagTagNumbersGroup = filteredRecords.stream().collect(
+                    Collectors.groupingBy(
+                            BaggageRecordOutput::getBagTagNumber, HashMap::new, Collectors.toCollection(ArrayList::new)));
+            List<BaggageRecordOutput> lostBaggage = new ArrayList<>();
+
+            bagTagNumbersGroup.forEach((k, v) -> {
+                BaggageRecordOutput generatedRecord = v.stream().filter(f ->
+                        f.getBagEventCode() == BagEventCode.BagTagGenerated &&
+                                Objects.equals(f.getBagEventAirportIATA(), f.getLeg0DepartureAirportIATA())
+                ).findFirst().orElse(null);
+
+                if (generatedRecord != null) {
+                    List<Boolean> isAnyLost = Stream.of(
+                            generatedRecord.getLeg0ArrivalAirportIATA(),
+                            generatedRecord.getLeg1ArrivalAirportIATA(),
+                            generatedRecord.getLeg2ArrivalAirportIATA(),
+                            generatedRecord.getLeg3ArrivalAirportIATA(),
+                            generatedRecord.getLeg4ArrivalAirportIATA(),
+                            generatedRecord.getLeg5ArrivalAirportIATA(),
+                            generatedRecord.getLeg6ArrivalAirportIATA(),
+                            generatedRecord.getLeg7ArrivalAirportIATA()
+                    ).map(leg -> isBaggageLost(leg, v)).collect(Collectors.toList());
+
+                    for(Boolean isLost : isAnyLost) {
+                        if(isLost) {
+                            lostBaggage.add(generatedRecord);
+                            return;
+                        }
+                    }
+                }
+            });
+
+
             File file = new File(System.currentTimeMillis() + "_" + BAGGAGE_RECORDS_POSTFIX + CSV_FILE_ENDING);
             CsvUtil<BaggageRecordOutput> csvUtilForTransformedRecords = new CsvUtil<>();
-            csvUtilForTransformedRecords.writeCsv(filteredRecords, file);
+            csvUtilForTransformedRecords.writeCsv(lostBaggage, file);
         }
+    }
+
+    private static boolean isBaggageLost(String leg, List<BaggageRecordOutput> v) {
+        if (StringUtils.isEmpty(leg)) {
+            return false;
+        }
+
+        BaggageRecordOutput arrivalNoticeRecord = v
+                .stream()
+                .filter(x -> x.getBagEventAirportIATA().equals(leg)
+                        && x.getBagEventCode() != BagEventCode.BagTagGenerated
+                )
+                .findFirst()
+                .orElse(null);
+
+        return arrivalNoticeRecord == null;
     }
 
     private static BaggageRecordOutput toOutputRecordsWithLocations(BaggageRecord aRecord, List<AirportIATACode> airportIATACodes) {
         BaggageRecordOutput baggageRecordOutput = BaggageRecordOutput.from(aRecord);
-        
-        if(baggageRecordOutput.getLeg0DepartureAirportIATA() != null) {
+
+        if (baggageRecordOutput.getLeg0DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg0DepartureAirportIATA())).findFirst();
-            
-            if(matchingAirport.isPresent()) {
+
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat0Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng0Departure(matchingAirport.get().getLng());
-                
+
             }
         }
 
-        if(baggageRecordOutput.getLeg0ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg0ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg0ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat0Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng0Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg1DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg1DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg1DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat1Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng1Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg1ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg1ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg1ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat1Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng1Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg2DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg2DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg2DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat2Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng2Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg2ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg2ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg2ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat2Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng2Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg3DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg3DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg3DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat3Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng3Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg3ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg3ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg3ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat3Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng3Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg4DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg4DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg4DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat4Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng4Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg4ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg4ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg4ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat4Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng4Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg5DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg5DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg5DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat5Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng5Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg5ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg5ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg5ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat5Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng5Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg6DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg6DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg6DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat6Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng6Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg6ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg6ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg6ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat6Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng6Arrival(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg7DepartureAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg7DepartureAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg7DepartureAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat7Departure(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng7Departure(matchingAirport.get().getLng());
 
             }
         }
 
-        if(baggageRecordOutput.getLeg7ArrivalAirportIATA() != null) {
+        if (baggageRecordOutput.getLeg7ArrivalAirportIATA() != null) {
             Optional<AirportIATACode> matchingAirport = airportIATACodes.stream().filter(codes -> codes.getIataCode().equals(baggageRecordOutput.getLeg7ArrivalAirportIATA())).findFirst();
 
-            if(matchingAirport.isPresent()) {
+            if (matchingAirport.isPresent()) {
                 baggageRecordOutput.setLat7Arrival(matchingAirport.get().getLat());
                 baggageRecordOutput.setLng7Arrival(matchingAirport.get().getLng());
 

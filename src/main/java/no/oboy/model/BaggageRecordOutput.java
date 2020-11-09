@@ -1,6 +1,8 @@
 package no.oboy.model;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -152,6 +154,8 @@ public class BaggageRecordOutput {
     private Double lat7Arrival;
     @CsvBindByName(column = "leg7_arr_lng")
     private Double lng7Arrival;
+    @CsvBindByName(column = "bagPnrCode")
+    String bagPnrCode;
 
     public BaggageRecordOutput() {
 
@@ -165,6 +169,7 @@ public class BaggageRecordOutput {
                 + aRecord.getSourceTimestamp().getMonthValue())
                 + aRecord.getSourceTimestamp().getDayOfMonth()
         );
+        baggageRecordOutput.setBagPnrCode(aRecord.getBagPnrCode());
         baggageRecordOutput.setSourceTimestamp(aRecord.sourceTimestamp);
         baggageRecordOutput.setBagTagNumber(aRecord.bagTagNumber);
         baggageRecordOutput.setBagEventCode(aRecord.bagEventCode);
@@ -790,6 +795,13 @@ public class BaggageRecordOutput {
 
     public void setLng7Arrival(Double lng7Arrival) {
         this.lng7Arrival = lng7Arrival;
+    }
+    public String getBagPnrCode() {
+        return bagPnrCode;
+    }
+
+    public void setBagPnrCode(String bagPnrCode) {
+        this.bagPnrCode = bagPnrCode;
     }
 }
 
