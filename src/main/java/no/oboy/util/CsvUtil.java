@@ -15,8 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static no.oboy.constants.ProjectConstants.PATH_TO_PROJECT;
-
 public class CsvUtil<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvUtil.class);
